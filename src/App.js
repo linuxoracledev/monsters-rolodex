@@ -1,25 +1,44 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { CardList } from './components/card-list/card-list.compolnent';
+import { Search } from './components/search-box/search-component';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      monstars: [],
+      searchInputValue: ''
+    }
+  }
+
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then((response) => response.json())
+      .then(users => this.setState({ monstars: users }));
+  }
+
+  changeHandler = e => { this.setState({ searchInputValue: e.target.value }) }
+
+  render() {
+    const { monstars, searchInputValue } = this.state;
+    const filteredMonstar = monstars.filter(monstar => {
+      return (monstar.name.toLowerCase().includes(searchInputValue));
+    })
+
+    return (
+      <div className="App">
+        <h1>Monstar Rolodex</h1>
+        <div className='search'>
+          <Search
+            placeholderText='Search for monstars'
+            changeHandler={this.changeHandler} />
+        </div>
+        <CardList monstarsProps={filteredMonstar} />
+      </div>
+    )
+  }
+
 }
 
 export default App;
